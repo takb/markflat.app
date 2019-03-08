@@ -11,11 +11,10 @@
 
   <RadSideDrawer ref="drawer" showOverNavigation="1">
     <StackLayout ~drawerContent backgroundColor="#ffffff">
-        <Label class="drawer-header" text="Drawer"/>
+        <Label class="drawer-header" :text="transpose"/>
 
-        <Label class="drawer-item" text="Item 1"/>
-        <Label class="drawer-item" text="Item 2"/>
-        <Label class="drawer-item" text="Item 3"/>
+        <Label class="drawer-item" text="transpose up" @tap="transposeUp" />
+        <Label class="drawer-item" text="transpose down" @tap="transposeDown" />
     </StackLayout>
 
     <Frame ~mainContent>
@@ -35,9 +34,21 @@
     computed: {
       query() {
         return this.$store.state.query;
+      },
+      transpose() {
+        return 'Transpose: ' + this.$store.state.showdown.transposeby;
       }
     },
     methods: {
+      transposeUp() {
+        this.$store.commit("transposeUp");
+      },
+      transposeDown() {
+        this.$store.commit("transposeDown");
+      },
+      toggleMinorChordMarker() {
+        this.$store.commit("toggleMinorChordMarker");
+      },
       updateQuery(e) {
         this.$store.commit("query", e.value);
       },

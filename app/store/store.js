@@ -2,7 +2,7 @@ import Vue from 'nativescript-vue';
 import Vuex from 'vuex';
 Vue.use(Vuex);
 import showdown from 'showdown'
-import sbmd from '../showdown.ext-sbmd'
+require('../showdown.ext-sbmd');
 
 function readJSON(path) {
   var fs = require('tns-core-modules/file-system');
@@ -32,8 +32,21 @@ export default new Vuex.Store({
     showdown: {}
   },
   mutations: {
+    transposeUp(state) {
+      state.showdown.transposeby++;
+      if (state.showdown.transposeby > 11)
+        state.showdown.transposeby = 0;
+    },
+    transposeDown(state) {
+      state.showdown.transposeby--;
+      if (state.showdown.transposeby < -11)
+        state.showdown.transposeby = 0;
+    },
+    toggleMinorChordMarker(state) {
+      state.showdown.addMinorChordMarker = !state.showdown.addMinorChordMarker;
+    },
     query(state, q) {
-      state.query = q
+      state.query = q;
     },
     loadSongbook(state, file) {
       readJSON(file)
@@ -47,9 +60,9 @@ export default new Vuex.Store({
       state.songbook = sb
     },
     initShowdown(state) {
-      state.showdown = new showdown.Converter({extensions: [sbmd]})
+      state.showdown = new showdown.Converter({extensions: ['sbmd']})
       state.showdown.addMinorChordMarker = false;
-      state.showdown.transposeby = 1;
+      state.showdown.transposeby = 0;
       state.showdown.transpose = function(key) {
         if (key && this.transposeby != undefined && this.transposeby != 0) {
           var isMinor = key.match(/^[a-g]/);

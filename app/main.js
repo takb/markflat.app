@@ -3,6 +3,11 @@ import App from './components/App'
 import VueDevtools from 'nativescript-vue-devtools'
 import store from './store/store';
 
+var handleOpenURL = require("nativescript-urlhandler").handleOpenURL;
+handleOpenURL(function(appURL) {
+  console.log('Got the following appURL', appURL);
+});
+
 if(TNS_ENV !== 'production') {
   Vue.use(VueDevtools)
 }

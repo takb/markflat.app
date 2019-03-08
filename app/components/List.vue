@@ -3,7 +3,10 @@
     <ScrollView>
       <ListView for="item in filteredSongs" @itemTap="openSong">
         <v-template>
-          <Label :text="item.title" />
+          <DockLayout class="list-item">
+            <Label :text="item.title" class="song-title" dock="left" />
+            <Label :text="item.artist" class="song-artist" dock="right" />
+          </DockLayout>
         </v-template>
       </ListView>
     </ScrollView>
@@ -35,3 +38,18 @@
     }
   }
 </script>
+
+<style scoped>
+  .list-item {
+    margin: 4;
+    padding: 4;
+  }
+  .song-title {
+    font-size: 16;
+    font-weight: bold;
+  }
+  .song-artist {
+    font-size: 14;
+    text-align: right;
+  }
+</style>
