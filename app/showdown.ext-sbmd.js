@@ -50,70 +50,9 @@
     var styling = {
       type: 'output',
       filter: function (text, converter, options) {
-        const style = `<style>
-          em {
-            font-style: normal;
-            text-decoration: underline;
-          }
-
-          h1 {
-            position: relative;
-            color: #333;
-            font-size: 18;
-          }
-
-          .sbmd-artist {
-            float: right;
-            font-size: 16;
-          }
-
-          ul, ol {
-            margin: 0;
-            padding: 0 0 0 64;
-            color: #333;
-          }
-
-          ul {
-            list-style: none;
-          }
-
-           ul li, ol li {
-            margin: 6 0;
-            line-height: 1.2em;
-          }
-
-          ul li::before {
-            position: absolute;
-            width: 66;
-            left: 0;
-            content: attr(list);
-            text-align: right;
-          }
-
-          .sbmd-ca {
-            position: relative;
-          }
-
-          .sbmd-chord {
-            position: absolute;
-            font-size: 0.9em;
-            bottom: 0.6em;
-          }
-
-          .sbmd-chord, .sbmd-chord-inline {
-            font-weight: bold;
-            white-space: nowrap;
-          }
-
-          .sbmd-chord sup {
-            font-size: 0.6em;
-          }
-
-          .sbmd-has-chords {
-            line-height: 1.9em;
-          }
-          </style>`;
-        return style + text.replace(/<li(.*?)>([\s\S]*?)<\/li>/g, function (match, tag, content) {
+        console.log(converter.zoom)
+        var zoom = converter.zoom != undefined && converter.zoom > 0 ? '<style>body {font-size: '+converter.zoom+'%;}</style>' : '';
+        return converter.style + zoom + text.replace(/<li(.*?)>([\s\S]*?)<\/li>/g, function (match, tag, content) {
           var addClass = content.match(/class="sbmd-ca"/) ? ' class="sbmd-has-chords"' : '';
           return '<li'+addClass+tag+'>'+content+'</li>';
         });
@@ -121,4 +60,89 @@
     };
     return [artist, elements, chords, styling];
   });
+  showdown.addMinorChordMarker = false;
+  showdown.transposeby = 0;
+  showdown.transpose = function(key) {
+    if (key && this.transposeby != undefined && this.transposeby != 0) {
+      var isMinor = key.match(/^[a-g]/);
+      var scale = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+      if (key.length > 1 && key[key.length - 1] == 'b') {
+        scale = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+      }
+      key = key.length > 1 ? key[0].toUpperCase() + key.substr(1, key.length - 1) : key.toUpperCase();
+      if (scale.indexOf(key) >= 0) {
+        var i = (scale.indexOf(key) + this.transposeby) % scale.length;
+        key = scale[ i < 0 ? i + scale.length : i ];
+        if (isMinor) {
+            key = key.toLowerCase();
+        }
+      } else {
+        console.log('transpose failed', key, scale)
+      }
+    }
+    return key;
+  };
+  showdown.style = `<style>
+    em {
+      font-style: normal;
+      text-decoration: underline;
+    }
+
+    h1 {
+      position: relative;
+      color: #333;
+      font-size: 1.4em;
+    }
+
+    .sbmd-artist {
+      float: right;
+      font-size: 0.9em;
+    }
+
+    ul, ol {
+      margin: 0;
+      padding: 0 0 0 4.4em;
+      color: #333;
+    }
+
+    ul {
+      list-style: none;
+    }
+
+     ul li, ol li {
+      margin: 6 0;
+      line-height: 1.2em;
+    }
+
+    ul li::before {
+      position: absolute;
+      width: 4.2em;
+      left: 0;
+      content: attr(list);
+      text-align: right;
+    }
+
+    .sbmd-ca {
+      position: relative;
+    }
+
+    .sbmd-chord {
+      position: absolute;
+      font-size: 0.9em;
+      bottom: 0.6em;
+    }
+
+    .sbmd-chord, .sbmd-chord-inline {
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .sbmd-chord sup {
+      font-size: 0.6em;
+    }
+
+    .sbmd-has-chords {
+      line-height: 1.9em;
+    }
+    </style>`;
 }));

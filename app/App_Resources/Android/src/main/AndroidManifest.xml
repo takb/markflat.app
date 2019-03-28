@@ -14,10 +14,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="mdsb" android:host="__PACKAGE__" />
+                <data android:mimeType="application/json" />
             </intent-filter>
         </activity>
         <activity android:name="com.tns.ErrorReportActivity" />

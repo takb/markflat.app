@@ -1,47 +1,42 @@
 <template>
   <Page actionBarHidden="true">
-    <ScrollView @swipe="onSwipe">
-      <WebView :src="songHtml" @tap="closeSong"/>
+    <ScrollView>
+      <WebView :src="songHtml" @tap="close" @swipe="onSwipe" @pinch="onPinch" @loaded="webviewLoaded" />
     </ScrollView>
   </Page>
 </template>
 
 <script>
-  var gestures = require("tns-core-modules/ui/gestures");
+import { mapActions, mapState } from 'vuex'
   export default {
-    props: ["song"],
     methods: {
-      closeSong() {
+      close() {
         this.$navigateBack();
       },
-      transposeUp() {
-        this.$store.commit("transposeUp");
+      ...mapActions(['transposeUp', 'transposeDown', 'setZoom']),
+      onSwipe(e) {
+        if (e.direction == 1)
+          this.transposeUp({showMessage: true});
+        if (e.direction == 2)
+          this.transposeDown({showMessage: true});
       },
-      transposeDown() {
-        this.$store.commit("transposeDown");
+      onPinch(e) {
+        if (e.state == 2)
+          this.setZoom(Math.floor(e.scale * 100));
       },
-      onSwipe (e) {
-        switch(e.direction) {
-          case 2:
-            this.transposeDown();
-            break;
-          case 6:
-            this.transposeUp();
-            break;
-          default:
-            break;
+      webviewLoaded(webview) { // hack required to handle swipe events without interference
+        if (webview.object.android) {
+            webview.object.android.getSettings().setBuiltInZoomControls(false);
         }
       }
     },
     computed: {
-      title() {
-        return this.$props.song.title;
-      },
-      artist() {
-        return this.$props.song.artist;
-      },
+      ...mapState(['showdown', 'song', 'zoom', 'transposeBy', 'addMinorChordMarker']),
       songHtml() {
-        return this.$store.state.showdown.makeHtml(this.$props.song.md);
+        var reactToChange = this.transposeBy;
+        reactToChange = this.addMinorChordMarker;
+        this.showdown.zoom = this.zoom;
+        return this.showdown.makeHtml(this.song.md);
       }
     }
   }

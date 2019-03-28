@@ -15,25 +15,26 @@
 
 <script>
   import Song from './Song'
+  import { mapActions, mapState } from 'vuex'
   export default {
     methods: {
+      ...mapActions(['loadSong']),
       openSong(e) {
-        this.$navigateTo(Song, {props: {"song":  e.item}});
+        this.loadSong(e.item);
+        this.$navigateTo(Song);
       },
       songSort(a,b) {
         return ('' + a.title).localeCompare(b.title)
       },
-
     },
     computed: {
+      ...mapState(['query', 'songbook']),
       filteredSongs() {
-        var query = this.$store.state.query;
-        var filteredArray = this.$store.state.songbook;
-        if (query) {
-          var r = new RegExp(query, 'i');
-          filteredArray = filteredArray.filter(song => r.exec(song.title) || r.exec(song.artist));
-        }
-        return filteredArray.sort(this.songSort);
+        console.log(this.query)
+        if (!this.query)
+          return this.songbook.sort(this.songSort);
+        var r = new RegExp(this.query, 'i');
+        return this.songbook.filter(song => r.exec(song.title) || r.exec(song.artist)).sort(this.songSort);
       }
     }
   }
@@ -41,8 +42,7 @@
 
 <style scoped>
   .list-item {
-    margin: 4;
-    padding: 4;
+    padding: 8;
   }
   .song-title {
     font-size: 16;

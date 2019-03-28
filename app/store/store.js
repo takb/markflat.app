@@ -29,24 +29,57 @@ export default new Vuex.Store({
   state: {
     query: "",
     songbook: [],
-    showdown: {}
+    song: {},
+    zoom: 100,
+    transposeBy: 0,
+    addMinorChordMarker: false,
+    showdown: {},
+    feedback: {},
   },
   mutations: {
-    transposeUp(state) {
-      state.showdown.transposeby++;
-      if (state.showdown.transposeby > 11)
-        state.showdown.transposeby = 0;
-    },
-    transposeDown(state) {
-      state.showdown.transposeby--;
-      if (state.showdown.transposeby < -11)
-        state.showdown.transposeby = 0;
-    },
-    toggleMinorChordMarker(state) {
-      state.showdown.addMinorChordMarker = !state.showdown.addMinorChordMarker;
-    },
     query(state, q) {
+      console.log(q)
       state.query = q;
+    },
+    songbook(state, sb) {
+      state.songbook = sb;
+    },
+    song(state, s) {
+      state.song = s;
+    },
+    zoom(state, z) {
+      state.zoom = z;
+    },
+    transposeBy(state, value) {
+      state.transposeBy = value;
+      state.showdown.transposeby = value;
+    },
+    addMinorChordMarker(state, value) {
+      state.addMinorChordMarker = value;
+      state.showdown.addMinorChordMarker = value;
+    },
+    showdown(state) {
+      state.showdown =  new showdown.Converter({extensions: ['sbmd']});
+    },
+    feedback(state) {
+      var FeedbackPlugin = require("nativescript-feedback");
+      state.feedback = new FeedbackPlugin.Feedback();
+    }
+  },
+  getters: {
+    transposeByString(state) {
+      return 'Transpose: ' + state.transposeBy;
+    },
+    zoomString(state) {
+      return 'Zoom: ' + state.zoom + ' %';
+    }
+  },
+  actions: {
+    init({ commit }) {
+      commit('feedback');
+      commit('showdown');
+      const json = require("../assets/compiled.json")
+      commit("songbook", json);
     },
     loadSongbook(state, file) {
       readJSON(file)
@@ -56,33 +89,39 @@ export default new Vuex.Store({
           console.log(error);
         });
     },
-    storeSongbook(state, sb) {
-      state.songbook = sb
+    transposeUp({ state, commit, dispatch }, param) {
+      var value = ++state.transposeBy;
+      value = value > 11 ? 0 : value;
+      commit('transposeBy', value);
+      if (param && param.showMessage)
+        dispatch('showInfo', "Transpose: " + value);
     },
-    initShowdown(state) {
-      state.showdown = new showdown.Converter({extensions: ['sbmd']})
-      state.showdown.addMinorChordMarker = false;
-      state.showdown.transposeby = 0;
-      state.showdown.transpose = function(key) {
-        if (key && this.transposeby != undefined && this.transposeby != 0) {
-          var isMinor = key.match(/^[a-g]/);
-          var scale = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-          if (key.length > 1 && key[key.length - 1] == 'b') {
-            scale = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
-          }
-          key = key.length > 1 ? key[0].toUpperCase() + key.substr(1, key.length - 1) : key.toUpperCase();
-          if (scale.indexOf(key) >= 0) {
-            var i = (scale.indexOf(key) + this.transposeby) % scale.length;
-            key = scale[ i < 0 ? i + scale.length : i ];
-            if (isMinor) {
-                key = key.toLowerCase();
-            }
-          } else {
-            console.log('transpose failed', key, scale)
-          }
-        }
-        return key;
-      }
-    }
+    transposeDown({ state, commit, dispatch }, param) {
+      var value = --state.transposeBy;
+      value = value < -11 ? 0 : value;
+      commit('transposeBy', value);
+      if (param && param.showMessage)
+        dispatch('showInfo', "Transpose: " + value);
+    },
+    toggleMinorChordMarker({ commit, state }) {
+      var value = !state.showdown.addMinorChordMarker;
+      commit('addMinorChordMarker', value);
+    },
+    loadSong({ commit }, s) {
+      commit('song', s);
+    },
+    updateQuery({ commit }, q) {
+      console.log(q)
+      commit('query', q);
+    },
+    setZoom({ commit }, z) {
+      commit('zoom', z);
+    },
+    showInfo({ state }, message) {
+      state.feedback.info({
+        message: message,
+        duration: 1500
+      });
+    },
   }
 });
