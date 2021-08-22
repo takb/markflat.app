@@ -11,7 +11,9 @@
   <RadSideDrawer ref="drawer" showOverNavigation="1">
     <StackLayout ~drawerContent backgroundColor="#ffffff">
       <Label class="drawer-header" text="Songbook file" />
-      <Label class="drawer-item" text="choose local songbook file" @tap="loadLocalFile" />
+      <Label class="drawer-item" text="Load songbook" @tap="loadServer" />
+      <Label class="drawer-item" text="Load default songbook" @tap="loadDefault" />
+      <!-- <Label class="drawer-item" text="Load songbook file" @tap="loadLocalFile" /> -->
       <Label class="drawer-header" :text="transposeByString" />
       <Label class="drawer-item" text="transpose up" @tap="transposeUp" />
       <Label class="drawer-item" text="transpose down" @tap="transposeDown" />
@@ -28,13 +30,14 @@
   import List from './List'
   import Song from './Song'
   import { mapActions, mapState, mapGetters } from 'vuex'
+
   export default {
     components: {
       List, Song
     },
     computed: {
       ...mapState(['query']),
-      ...mapGetters(['transposeByString', 'zoomString'])
+      ...mapGetters(['transposeByString', 'zoomString']),
     },
     methods: {
       appLoaded() {
@@ -43,10 +46,7 @@
       toggleMenu() {
         this.$refs.drawer.nativeView.toggleDrawerState();
       },
-      ...mapActions(['transposeUp', 'transposeDown', 'toggleMinorChordMarker', 'updateQuery']),
-      loadLocalFile() {
-
-      }
+      ...mapActions(['transposeUp', 'transposeDown', 'toggleMinorChordMarker', 'updateQuery', 'loadServer', 'loadDefault']),
     },
   }
 </script>

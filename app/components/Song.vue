@@ -36,6 +36,7 @@ import { mapActions, mapState } from 'vuex'
         var reactToChange = this.transposeBy;
         reactToChange = this.addMinorChordMarker;
         this.showdown.zoom = this.zoom;
+        this.showdown.wtf = "wtf";
         return this.showdown.makeHtml(this.song.md);
       }
     }
