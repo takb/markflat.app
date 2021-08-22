@@ -189,7 +189,7 @@ export default new Vuex.Store({
         </style>`;
     },
     feedback(state) {
-            var FeedbackPlugin = require("nativescript-feedback");
+      var FeedbackPlugin = require("nativescript-feedback");
       state.feedback = new FeedbackPlugin.Feedback();
     }
   },
@@ -240,12 +240,13 @@ export default new Vuex.Store({
     //   }
     // },
     loadServer({ state, commit }) {
-      console.log(state.songbook[0])
       Http.getJSON('https://www.genkidelic.de/songbook.php').then(
         (result) => {
-          console.log(result)
-          console.log(result.length + " songs loaded")
           commit("songbook", result);
+          state.feedback.info({
+            message: result.length + " songs loaded",
+            duration: 1500
+          });
           writeJSON(storagePath, result)
             .then(function(){
               console.log("songbook saved");

@@ -26,7 +26,7 @@
     var chords = {
       type: 'lang',
       filter: function (text, converter, options) {
-        return text.replace(/\{(.+?)\}([a-zA-Z\' ]|_[a-zA-Z ]_|\.|$)/g, function(match, p1, p2) {
+        return text.replace(/\{(.+?)\}([a-zA-Z\' ]|[^\u0000-\u007F]|\.|$)/g, function(match, p1, p2) {
           var chord = p1.replace(/^([a-gA-G][#b]?m?)(.*?)(?:\/([a-gA-G][#b]?))?$/g, function(match, key = '', modifier = '', bass = '') {
             if (typeof converter.transpose == 'function') {
               key = converter.transpose(key);
@@ -41,7 +41,7 @@
           var base = p2 != '.' ? p2.replace(' ', '&nbsp;&nbsp;&nbsp;') : '';
           return base ? '<span class="sbmd-ca"><span class="sbmd-chord">'+chord+'</span>'+base+'</span>' : '<span class="sbmd-chord-inline">'+chord+'</span>';
         })
-        .replace(/\{(\.\.\.|\:?\|\|?\:?|\')\}([a-zA-Z ]|_[a-zA-Z ]_|\.|$)/g, function (match, tag, base) {
+        .replace(/\{(\.\.\.|\:?\|\|?\:?|\')\}([a-zA-Z ]|[^\u0000-\u007F]|\.|$)/g, function (match, tag, base) {
           var base = base != '.' ? p2.replace(' ', '&nbsp;&nbsp;&nbsp;') : '';
           return base ? '<span class="sbmd-ca"><span class="sbmd-chord">'+tag+'</span>'+base+'</span>' : '<span class="sbmd-chord-inline">…</span>';
         });
