@@ -271,6 +271,15 @@ export default new Vuex.Store({
       if (param && param.showMessage)
         dispatch('showInfo', "Transpose: " + value);
     },
+    zoomIn({ state, dispatch }, param) {
+      dispatch('setZoom', state.zoom + 5);
+    },
+    zoomOut({ state, dispatch }, param) {
+      dispatch('setZoom', state.zoom - 5);
+    },
+    zoomReset({ state, dispatch }, param) {
+      dispatch('setZoom', 100);
+    },
     transposeDown({ state, commit, dispatch }, param) {
       var value = --state.transposeBy;
       value = value < -11 ? 0 : value;

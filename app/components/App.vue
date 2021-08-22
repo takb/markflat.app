@@ -3,10 +3,10 @@
 <template>
   <Page @loaded="appLoaded">
     <ActionBar col="0" row="0">
-        <GridLayout width="100%" columns="48, *">
-            <Button text="" @tap="toggleMenu" col="0" class="fa button-icon" />
-            <SearchBar :test="query" hint="Search songs..." col="1" />
-        </GridLayout>
+      <GridLayout width="100%" columns="48, *">
+        <Button text="" @tap="toggleMenu" col="0" class="fa fa-bars button-icon" />
+        <SearchBar :test="query" hint="Search songs..." col="1" />
+      </GridLayout>
     </ActionBar>
   <RadSideDrawer ref="drawer" showOverNavigation="1">
     <StackLayout ~drawerContent backgroundColor="#ffffff">
@@ -15,9 +15,12 @@
       <Label class="drawer-item" text="Load default songbook" @tap="loadDefault" />
       <!-- <Label class="drawer-item" text="Load songbook file" @tap="loadLocalFile" /> -->
       <Label class="drawer-header" :text="transposeByString" />
-      <Label class="drawer-item" text="transpose up" @tap="transposeUp" />
-      <Label class="drawer-item" text="transpose down" @tap="transposeDown" />
+      <Label class="drawer-item" text="Transpose up" @tap="transposeUp" />
+      <Label class="drawer-item" text="Transpose down" @tap="transposeDown" />
       <Label class="drawer-header" :text="zoomString" />
+      <Label class="drawer-item" text="Zoom reset" @tap="zoomReset" />
+      <Label class="drawer-item" text="Zoom +5%" @tap="zoomIn" />
+      <Label class="drawer-item" text="Zoom -5%" @tap="zoomOut" />
     </StackLayout>
     <Frame ~mainContent>
       <List />
@@ -46,7 +49,7 @@
       toggleMenu() {
         this.$refs.drawer.nativeView.toggleDrawerState();
       },
-      ...mapActions(['transposeUp', 'transposeDown', 'toggleMinorChordMarker', 'updateQuery', 'loadServer', 'loadDefault']),
+      ...mapActions(['transposeUp', 'transposeDown', 'zoomIn', 'zoomOut', 'zoomReset', 'toggleMinorChordMarker', 'updateQuery', 'loadServer', 'loadDefault']),
     },
   }
 </script>
